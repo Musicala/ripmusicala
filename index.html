@@ -1,273 +1,182 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RIP Musicala 2025</title>
-    <style>
-        body {
-            font-family: 'Roboto', Arial, sans-serif;
-            background-color: #E3E3E3;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rip Musicala 2025</title>
+  <style>
+    :root{
+      --mozart:#0C41C4; --beethoven:#680DBF; --brahms:#CE0071;
+      --bg:#F4F6FB; --card:#FFFFFF; --line:#E6E8F0; --text:#1F2937; --muted:#8A94A6;
+    }
+    *{ box-sizing:border-box }
+    body{
+      font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:linear-gradient(135deg, rgba(12,65,196,.06), rgba(104,13,191,.06));
+      color:var(--text); margin:0
+    }
+    .header{
+      background:linear-gradient(90deg, var(--mozart), var(--beethoven));
+      color:#fff; text-align:center; padding:22px; font-size:24px; font-weight:800
+    }
+    .container{
+      max-width:1200px; margin:28px auto; padding:20px;
+      background:var(--card); border-radius:16px;
+      box-shadow:0 10px 30px rgba(12,65,196,.08), 0 6px 16px rgba(0,0,0,.06)
+    }
+    .filters{
+      display:grid; grid-template-columns:repeat(4, minmax(220px,1fr));
+      gap:16px; margin-bottom:14px
+    }
+    .filter-group{ display:flex; flex-direction:column; gap:6px; position:relative }
+    .filter-group label{ font-weight:800; font-size:13px; color:#0f1a2b; letter-spacing:.3px }
+    input, select, button{ font-size:16px }
+    input, select{
+      padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#FAFBFF; outline:none
+    }
+    input:focus, select:focus{ border-color:var(--mozart); box-shadow:0 0 0 3px rgba(12,65,196,.15) }
 
-        .header {
-            background: #2E3B55;
-            color: white;
-            text-align: center;
-            padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
-        }
+    /* Dropdown de servicios */
+    .dropdown-toggle{
+      display:flex; align-items:center; justify-content:space-between; gap:8px;
+      padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#FAFBFF; cursor:pointer;
+      width:100%;
+    }
+    .dropdown-menu{
+      position:absolute; z-index:20; top:100%; left:0; right:0; margin-top:6px;
+      background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,.12);
+      max-height:280px; overflow:auto; padding:10px;
+      display:none; /* oculto por defecto */
+    }
+    .dropdown-menu.open{ display:block } /* se muestra cuando JS agrega .open */
 
-        .container {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 20px;
-            background: white;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-        }
+    /* Chips/checkboxes dentro del menú */
+    .check{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px; border:1px solid var(--line); border-radius:999px; background:#fff; margin:6px 6px 0 0;
+      white-space:nowrap;
+    }
+    .check input{ accent-color:var(--mozart); width:16px; height:16px }
+    .tag{
+      font-size:13px; font-weight:700;
+      background:linear-gradient(90deg,var(--mozart),var(--beethoven));
+      -webkit-background-clip:text; background-clip:text; color:transparent
+    }
+    .badge{ font-size:12px; padding:2px 8px; border-radius:999px; background:#EEF2FF; color:#3B43A5 }
 
-        .filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 20px;
-            justify-content: space-between;
-        }
+    .row{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:10px }
+    .btn{
+      background:linear-gradient(90deg, var(--mozart), var(--beethoven));
+      color:#fff; border:0; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:700
+    }
+    .btn.secondary{ background:#fff; color:var(--mozart); border:1px solid var(--mozart) }
+    .btn:hover{ filter:brightness(.95) }
+    .status{ font-size:13px; color:var(--muted) }
 
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            max-width: 250px;
-        }
+    table{ width:100%; border-collapse:collapse; margin-top:12px; background:#fff; overflow:hidden; border-radius:12px }
+    th,td{ border:1px solid var(--line); padding:10px; text-align:left; font-size:14px }
+    th{ background:linear-gradient(90deg, var(--mozart), var(--beethoven)); color:#fff; font-weight:800; position:sticky; top:0 }
+    tr:nth-child(even){ background:#F9FAFE }
+    tr:hover{ background:#F1F5FF }
 
-        .filter-group label {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
+    /* Paginación */
+    .pagination{ display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap }
+    .page-btn{ border:1px solid var(--line); background:#fff; padding:6px 10px; border-radius:8px; cursor:pointer }
+    .page-btn[disabled]{ opacity:.5; cursor:not-allowed }
+    .page-info{ font-size:13px; color:var(--muted) }
+    .page-size{ border:1px solid var(--line); border-radius:8px; padding:6px 10px }
 
-        select, input[type="text"] {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #BBB;
-            border-radius: 5px;
-            width: 100%;
-            background-color: #F9F9F9;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: white;
-        }
-
-        th, td {
-            border: 1px solid #DDD;
-            padding: 10px;
-            text-align: left;
-            font-size: 14px;
-        }
-
-        th {
-            background: #2E3B55;
-            color: white;
-            font-weight: bold;
-        }
-
-        tr:nth-child(even) {
-            background: #F2F2F2;
-        }
-
-        tr:hover {
-            background: #DDE5F0;
-        }
-
-        /* Estilo para el botón de descargar PDF */
-        .pdf-button {
-            background: #2E3B55;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-
-        .pdf-button:hover {
-            background: #1d273d;
-        }
-    </style>
+    @media (max-width:980px){ .filters{ grid-template-columns:repeat(2,1fr) } }
+    @media (max-width:600px){ .filters{ grid-template-columns:1fr } }
+  </style>
 </head>
 <body>
 
-    <div class="header">RIP Musicala 2025</div>
+  <div class="header">Rip Musicala 2025</div>
 
-    <div class="container">
-        <div class="filters">
-            <div class="filter-group">
-                <label for="searchFilter">🔍 Buscar:</label>
-                <input type="text" id="searchFilter" placeholder="Buscar en la tabla...">
-            </div>
-            <div class="filter-group">
-                <label for="profesorFilter">Profesor:</label>
-                <select id="profesorFilter">
-                    <option value="">Todos</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="servicioFilter">Servicio:</label>
-                <select id="servicioFilter">
-                    <option value="">Todos</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="cicloFilter">Ciclo:</label>
-                <select id="cicloFilter">
-                    <option value="">Todos</option>
-                </select>
-            </div>
-        </div>
+  <div class="container">
+    <div class="filters">
+      <div class="filter-group">
+        <label for="estudianteFilter">👤 Estudiante</label>
+        <input id="estudianteFilter" placeholder="Escribe nombre (parcial o completo)..." list="nombresLista"/>
+        <datalist id="nombresLista"></datalist>
+      </div>
 
-        <!-- Botón para descargar PDF -->
-        <button class="pdf-button" onclick="descargarPDF()">📄 Descargar PDF</button>
+      <div class="filter-group" id="servicioGroup">
+        <label for="servicioToggle">🎛️ Servicio <span class="badge" id="srvCount">0</span></label>
+        <button class="dropdown-toggle" id="servicioToggle">Selecciona servicio(s) ▾</button>
+        <div id="servicioMenu" class="dropdown-menu"></div>
+      </div>
 
-        <!-- Tabla con ID específico para exportar solo esta sección -->
-        <div id="tablaContainer">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Estudiante</th>
-                        <th>Tipo</th>
-                        <th>Fecha</th>
-                        <th>Hora</th>
-                        <th>Servicio</th>
-                        <th># Clase</th>
-                        <th>Ciclo</th>
-                        <th>Profesor</th>
-                        <th>Pago</th>
-                        <th>Comentario</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
-        </div>
+      <div class="filter-group">
+        <label for="profesorFilter">👩‍🏫 Profesor</label>
+        <select id="profesorFilter"><option value="">Todos</option></select>
+      </div>
+
+      <div class="filter-group">
+        <label for="cicloFilter">🔁 Ciclo</label>
+        <select id="cicloFilter"><option value="">Todos</option></select>
+      </div>
+
+      <div class="filter-group">
+        <label for="tipoFilter">🏷️ Tipo</label>
+        <select id="tipoFilter"><option value="">Todos</option></select>
+      </div>
+
+      <div class="filter-group">
+        <label for="fechaDesde">📅 Desde</label>
+        <input type="date" id="fechaDesde"/>
+      </div>
+      <div class="filter-group">
+        <label for="fechaHasta">📅 Hasta</label>
+        <input type="date" id="fechaHasta"/>
+      </div>
     </div>
 
-    <!-- Librería para generar PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <div class="row">
+      <button class="btn" id="btnPDF">📄 Descargar PDF</button>
+      <button class="btn secondary" id="btnRefresh">♻️ Actualizar datos</button>
+      <button class="btn" id="btnOpenDialog">🧾 Abrir diálogo de pago</button>
+      <button class="btn secondary" id="btnSendQuick">🚀 Enviar pago (rápido)</button>
+      <div class="status" id="status"></div>
+    </div>
 
-    <script>
-        const urlTSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRv5znuM6DUG7m6DOQBCbjzJiYpZJiuMK23GW__RfMCcOi1kAcMT_7YH7CzBgmtDEJ-HeiJ5bgCKryw/pub?gid=1810443337&single=true&output=tsv";
+    <div id="tablaContainer">
+      <table>
+        <thead>
+          <tr>
+            <th>Estudiante</th>
+            <th>Tipo</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Servicio</th>
+            <th># Clase</th>
+            <th>Ciclo</th>
+            <th>Profesor</th>
+            <th>Pago</th>
+            <th>Comentario</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
 
-        let clases = [];
+      <div class="pagination">
+        <button class="page-btn" id="prevPage">⬅️ Anterior</button>
+        <button class="page-btn" id="nextPage">Siguiente ➡️</button>
+        <span class="page-info" id="pageInfo"></span>
+        <label class="page-info">• Por página:
+          <select id="pageSize" class="page-size">
+            <option value="100">100</option>
+            <option value="200" selected>200</option>
+            <option value="300">300</option>
+            <option value="500">500</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </div>
 
-        async function cargarTSV() {
-            const response = await fetch(urlTSV);
-            const data = await response.text();
-            const filas = data.split("\n").map(row => row.split("\t"));
-
-            clases = filas.slice(1).map(row => ({
-                estudiante: row[0] || "",
-                tipo: row[2] || "",
-                fecha: row[4] ? row[4].trim().split("/").reverse().join("-") : "", 
-                hora: row[8] || "",
-                servicio: row[5] || "",
-                numClase: row[6] || "",
-                ciclo: row[7] || "",
-                profesor: row[9] || "",
-                pago: row[10] || "",
-                comentario: row[11] || ""
-            })).filter(c => c.fecha).sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-
-            actualizarFiltros();
-            aplicarFiltros();
-        }
-
-        function actualizarFiltros() {
-            actualizarSelect("profesorFilter", [...new Set(clases.map(c => c.profesor))]);
-            actualizarSelect("servicioFilter", [...new Set(clases.map(c => c.servicio))]);
-            actualizarSelect("cicloFilter", [...new Set(clases.map(c => c.ciclo))]);
-        }
-
-        function actualizarSelect(id, valores) {
-            const select = document.getElementById(id);
-            select.innerHTML = '<option value="">Todos</option>';
-            valores.forEach(valor => {
-                if (valor) {
-                    const option = document.createElement("option");
-                    option.value = valor;
-                    option.textContent = valor;
-                    select.appendChild(option);
-                }
-            });
-        }
-
-        function aplicarFiltros() {
-            const searchText = document.getElementById("searchFilter").value.toLowerCase();
-            const profesor = document.getElementById("profesorFilter").value;
-            const servicio = document.getElementById("servicioFilter").value;
-            const ciclo = document.getElementById("cicloFilter").value;
-
-            const tableBody = document.getElementById("tableBody");
-            tableBody.innerHTML = "";
-
-            clases.filter(c =>
-                (!profesor || c.profesor === profesor) &&
-                (!servicio || c.servicio === servicio) &&
-                (!ciclo || c.ciclo === ciclo) &&
-                Object.values(c).some(value => value.toLowerCase().includes(searchText))
-            ).forEach(c => {
-                let row = document.createElement("tr");
-                row.innerHTML = `<td>${c.estudiante}</td><td>${c.tipo}</td><td>${c.fecha}</td><td>${c.hora}</td>
-                <td>${c.servicio}</td><td>${c.numClase}</td><td>${c.ciclo}</td><td>${c.profesor}</td>
-                <td>${c.pago}</td><td>${c.comentario}</td>`;
-                tableBody.appendChild(row);
-            });
-        }
-
-        function descargarPDF() {
-    console.log("Generando PDF con mejor calidad...");
-    
-    const tabla = document.getElementById("tablaContainer");
-
-    const opciones = {
-        margin: 10, // Márgenes más pequeños
-        filename: "reporte_clases.pdf",
-        image: { type: "jpeg", quality: 1 }, // Mejor calidad
-        html2canvas: { 
-            scale: 3, // Aumentar la resolución para evitar baja calidad
-            dpi: 300, // DPI alto para mejor calidad
-            letterRendering: true
-        },
-        jsPDF: { 
-            unit: "mm", 
-            format: "a4", // Formato A4
-            orientation: "landscape" // Modo horizontal para mejor ajuste
-        }
-    };
-
-    html2pdf()
-        .set(opciones)
-        .from(tabla)
-        .toPdf()
-        .get("pdf")
-        .then(pdf => {
-            console.log("PDF generado con éxito.");
-        })
-        .save();
-}
-
-        document.querySelectorAll("select, input").forEach(f => f.addEventListener("input", aplicarFiltros));
-
-        cargarTSV();
-    </script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+  <script src="app.js" defer></script>
 </body>
 </html>
