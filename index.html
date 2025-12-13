@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rip Musicala 2025</title>
+  <title>RIP 2025 · Musicala</title>
   <style>
     :root{
       --mozart:#0C41C4; --beethoven:#680DBF; --brahms:#CE0071;
       --bg:#F4F6FB; --card:#FFFFFF; --line:#E6E8F0; --text:#1F2937; --muted:#8A94A6;
+      --ok:#16a34a; --warn:#dc2626; --info:#0ea5e9;
     }
     *{ box-sizing:border-box }
     body{
@@ -46,11 +47,10 @@
       position:absolute; z-index:20; top:100%; left:0; right:0; margin-top:6px;
       background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,.12);
       max-height:280px; overflow:auto; padding:10px;
-      display:none; /* oculto por defecto */
+      display:none;
     }
-    .dropdown-menu.open{ display:block } /* se muestra cuando JS agrega .open */
+    .dropdown-menu.open{ display:block }
 
-    /* Chips/checkboxes dentro del menú */
     .check{
       display:inline-flex; align-items:center; gap:8px;
       padding:8px 10px; border:1px solid var(--line); border-radius:999px; background:#fff; margin:6px 6px 0 0;
@@ -70,6 +70,7 @@
       color:#fff; border:0; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:700
     }
     .btn.secondary{ background:#fff; color:var(--mozart); border:1px solid var(--mozart) }
+    .btn:disabled{ opacity:.6; cursor:not-allowed }
     .btn:hover{ filter:brightness(.95) }
     .status{ font-size:13px; color:var(--muted) }
 
@@ -79,7 +80,23 @@
     tr:nth-child(even){ background:#F9FAFE }
     tr:hover{ background:#F1F5FF }
 
-    /* Paginación */
+    .acciones-btn{
+      padding:4px 8px; border-radius:8px; border:0; cursor:pointer; font-size:13px;
+      display:inline-flex; align-items:center; gap:4px; margin-right:4px;
+    }
+    .acciones-btn.edit{ background:#EEF2FF; color:#1D2A7A }
+    .acciones-btn.save{ background:#16a34a; color:#fff }
+    .acciones-btn.cancel{ background:#E5E7EB; color:#111827 }
+    .acciones-btn.dup{ background:#FDF2FF; color:#9D174D }
+
+    .acciones-btn:disabled{ opacity:.6; cursor:not-allowed }
+
+    .acciones-cell{ white-space:nowrap }
+
+    .edit-input{
+      width:100%; padding:6px 8px; border-radius:8px; border:1px solid var(--line); font-size:14px;
+    }
+
     .pagination{ display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap }
     .page-btn{ border:1px solid var(--line); background:#fff; padding:6px 10px; border-radius:8px; cursor:pointer }
     .page-btn[disabled]{ opacity:.5; cursor:not-allowed }
@@ -88,11 +105,36 @@
 
     @media (max-width:980px){ .filters{ grid-template-columns:repeat(2,1fr) } }
     @media (max-width:600px){ .filters{ grid-template-columns:1fr } }
+
+    /* ===== Toasts ===== */
+    .toast-wrap{
+      position:fixed; top:16px; right:16px; z-index:9999; display:flex; flex-direction:column; gap:10px;
+    }
+    .toast{
+      min-width:260px; max-width:360px; background:#fff; border:1px solid var(--line); border-radius:12px;
+      box-shadow:0 8px 24px rgba(0,0,0,.12); padding:12px 14px; display:flex; gap:10px; align-items:flex-start;
+      animation: slideIn .2s ease-out; transition:opacity .25s ease, transform .25s ease;
+    }
+    .toast .icon{ font-size:18px; line-height:1; margin-top:1px }
+    .toast .msg{ font-size:14px }
+    .toast.ok   { border-left:6px solid var(--ok) }
+    .toast.warn { border-left:6px solid var(--warn) }
+    .toast.info { border-left:6px solid var(--info) }
+    .toast .bar{
+      height:3px; width:100%; border-radius:999px; background:rgba(0,0,0,.06); position:relative; overflow:hidden; margin-top:6px
+    }
+    .toast .bar>span{
+      position:absolute; left:0; top:0; bottom:0; width:100%;
+      transform:translateX(0); animation: progress 3s linear forwards;
+      background:linear-gradient(90deg, var(--mozart), var(--beethoven));
+    }
+    @keyframes slideIn{ from{ transform:translateY(-6px); opacity:0 } to{ transform:none; opacity:1 } }
+    @keyframes progress{ from{ transform:translateX(0) } to{ transform:translateX(-100%) } }
   </style>
 </head>
 <body>
 
-  <div class="header">Rip Musicala 2025</div>
+  <div class="header">RIP 2025 · Musicala</div>
 
   <div class="container">
     <div class="filters">
@@ -155,6 +197,7 @@
             <th>Profesor</th>
             <th>Pago</th>
             <th>Comentario</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -176,7 +219,13 @@
     </div>
   </div>
 
+  <!-- Contenedor de toasts -->
+  <div class="toast-wrap" id="toastWrap" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Librería PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+
+  <!-- App -->
   <script src="app.js" defer></script>
 </body>
 </html>
